@@ -4,7 +4,7 @@ from queue import PriorityQueue
 
 WIDTH = 800
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
-pygame.display.set_caption("A* Pathfinding Algorithm")
+pygame.display.set_caption("A* Pathfinding Algorithm -- Karthik Kurapati")
 
 
 RED = (255, 0, 0)
@@ -17,18 +17,36 @@ PURPLE = (128, 0, 128)
 ORANGE = (255, 165 ,0)
 GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
-
+MAP = [
+    [2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+]
 class Node :
-    def __init__(self, row, col, width, total_rows):
+    def __init__(self, row, col, width, total_rows,color):
         self.row=row
         self.col=col
         self.x=row*width
         self.y=col*width
-        self.color=WHITE
+        self.color= color
         self.neighbors=[]
         self.width=width
         self.total_rows=total_rows
-
+    def get_x(self):
+         return self.x
+    def get_y(self):
+         return self.y
+    def get_color(self):
+        return self.color
     def get_pos(self):
         return self.row,self.col
     def is_closed(self):
@@ -45,7 +63,6 @@ class Node :
         self.color = WHITE
     def make_start(self):
         self.color = ORANGE
-        print("yeah")
     def make_closed(self):
         self.color = RED
     def make_open(self):
@@ -131,18 +148,34 @@ def make_grid(rows, width):
     for i in range(rows):
         grid.append([])
         for j in range(rows):
-            node = Node(i , j,gap,rows)
+            node = Node(i , j,gap,rows,WHITE)
             grid[i].append(node)
 
     return grid
-
+def make_definedGrid(rows,width):
+    grid = []
+    gap = width // rows
+    for i in range(rows):
+        grid.append([])
+        for j in range(rows):
+            if (MAP[i][j] == 1):
+                node = Node(i , j,gap,rows,BLACK)
+                grid[i].append(node)
+            if (MAP[i][j] == 0):
+                node = Node(i , j,gap,rows, WHITE)
+                grid[i].append(node)
+            if (MAP[i][j] == 2):
+                node = Node(i , j,gap,rows,ORANGE)
+                grid[i].append(node)
+            if (MAP[i][j] == 3):
+                node = Node(i , j,gap,rows,TURQUOISE)
+                grid[i].append(node)
 def draw_grid(win,rows,width):
     gap = width // rows
     for i in range(rows):
         pygame.draw.line(win,GREY,(0, i * gap),(width, i * gap))
         for j in range(rows):
             pygame.draw.line(win,GREY,(j * gap, 0),(j * gap,width))
-
 def draw(win, grid, rows, width):
     win.fill(WHITE)
 
@@ -151,7 +184,6 @@ def draw(win, grid, rows, width):
             node.draw(win)
     draw_grid(win,rows,width)
     pygame.display.update()
-
 def get_clicked_pos(pos,rows,width):
     gap = width // rows
     y , x = pos
@@ -160,7 +192,6 @@ def get_clicked_pos(pos,rows,width):
     col = x // gap
 
     return row, col
-
 def main(win, width):
     ROWS = 50
     grid = make_grid(ROWS , width)
@@ -211,6 +242,29 @@ def main(win, width):
                      start = None
                      end = None
                      grid = make_grid(ROWS, width)
+                if event.key == pygame.K_1:
+                     for row in grid:
+                          for node in row:
+                               print(node.get_color(), end = ',')
+                if event.key == pygame.K_2:
+                    for i in range(len(grid[0])):
+                        for row in grid:
+                            node = row[i]
+                            if node.get_color() == WHITE:
+                                print("0", end=',')
+                            elif node.get_color() == BLACK:
+                                print("1", end=',')
+                            elif node.get_color() == ORANGE:
+                                print("2", end=',')
+                            elif node.get_color() == TURQUOISE:
+                                print("3", end=',')
+                        print(";",end='')
+                if event.key == pygame.K_3:
+                     start = None
+                     end = None
+                     grid = make_definedGrid(ROWS, width)                         
+
+                               
     pygame.quit()
      
 main(WIN,WIDTH)
